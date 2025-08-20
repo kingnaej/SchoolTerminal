@@ -811,19 +811,15 @@ Eleve createStudent()
         id = toLower(id);
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::ifstream idFile{"../../data/id.txt"};
-        if (idFile.is_open())
-        {
+        if (idFile.is_open()) {
             std::string line;
-            while (std::getline(idFile, line))
-            {
+            unique = true;
+            while (std::getline(idFile, line)) {
                 if (toLower(line) == id)
                 {
                     unique = false;
                     std::cout << "ID deja utilise " << std::endl;
-                }
-                else
-                {
-                    unique = true;
+                    break;
                 }
             }
         }
