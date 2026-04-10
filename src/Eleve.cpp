@@ -1,7 +1,8 @@
 #include "Eleve.hpp"
 #include <iostream>
 
-Eleve::Eleve(std::string id, std::string name, std::string prenom, Classe classe, std::string gender) : id(id), name(name), prenom(prenom), gender(gender), classe(classe) {}
+Eleve::Eleve(std::string id, std::string name, std::string prenom, Classe classe, std::string gender) : id(id),
+name(name), prenom(prenom), gender(gender), classe(classe) {}
 
 Classe Eleve::getClasse() const {
     return this->classe;

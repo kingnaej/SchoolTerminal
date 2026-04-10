@@ -47,7 +47,6 @@ void beginProgram()
       auto const eleve = createStudent();
         menu(eleve);
     }
-
 }
 
 std::vector<std::string> listMatiere(const Eleve &student)
@@ -200,6 +199,10 @@ double truncateTo2Digits(double value)
     return static_cast<int>(value * 100) / 100.0;
 }
 
+void annuler(const Eleve &student) {
+    menu(student);
+}
+
 void menu(const Eleve &student)
 {
     bool go = true;
@@ -245,9 +248,13 @@ void menu(const Eleve &student)
                 {
                     std::cout << i << "- " << allMatiere[i-1] << std::endl;
                 }
+                std::cout << "0 : Annuler mon action " << std::endl;
                 std::cout << "Choisissez la matiere dont vous souhaitez ajouter une note (ex : 2) : ";
                 int choixMatiere;
                 std::cin >> choixMatiere;
+                if (choixMatiere == 0) {
+                    annuler(student);
+                }
                 addNoteOfMatiere(student, toUpper(allMatiere[choixMatiere - 1]));
                 break;
             }
@@ -269,9 +276,13 @@ void menu(const Eleve &student)
                 {
                     std::cout << i << "- " << allMatiere[i-1] << std::endl;
                 }
+                std::cout << "0 : Annuler mon action " << std::endl;
                 std::cout << "Choisissez la matiere dont vous souhaitez modifier une note (ex : 2) : ";
                 int choixMatiere;
                 std::cin >> choixMatiere;
+                if (choixMatiere == 0) {
+                    annuler(student);
+                }
                 std::vector<Note> allNoteOfMatiere = listNoteOfMatiere(student, allMatiere[choixMatiere - 1]);
                 if (allNoteOfMatiere.empty())
                 {
@@ -290,9 +301,13 @@ void menu(const Eleve &student)
                     std::cout << i << "- " << allNoteOfMatiere[i-1].getValue() <<  "/" <<
                         allNoteOfMatiere[i-1].getMaxPoint() << std::endl;
                 }
+                std::cout << "0 : Annuler mon action " << std::endl;
                 std::cout << "Choisissez la note que vous souhaitez modifier (ex : 2) : ";
                 int choixNote;
                 std::cin >> choixNote;
+                if (choixNote == 0) {
+                    annuler(student);
+                }
                 int const niemeNote = choixNote;
                 modifyNoteofMatiere(student, allNoteOfMatiere[choixNote - 1], niemeNote);
                 break;
@@ -316,9 +331,13 @@ void menu(const Eleve &student)
                 {
                     std::cout << i << "- " << allMatiere[i-1] << std::endl;
                 }
+                std::cout << "0 : Annuler mon action " << std::endl;
                 std::cout << "Choisissez la matiere dont vous souhaitez supprimer une note (ex : 2) : ";
                 int choixMatiere;
                 std::cin >> choixMatiere;
+                if (choixMatiere == 0) {
+                    annuler(student);
+                }
                 std::vector<Note> allNoteOfMatiere = listNoteOfMatiere(student, allMatiere[choixMatiere - 1]);
                 if (allNoteOfMatiere.empty())
                 {
@@ -337,9 +356,13 @@ void menu(const Eleve &student)
                     std::cout << i << "- " << allNoteOfMatiere[i-1].getValue() <<  "/" <<
                         allNoteOfMatiere[i-1].getMaxPoint() << std::endl;
                 }
+                std::cout << "0 : Annuler mon action " << std::endl;
                 std::cout << "Choisissez la note que vous souhaitez modifier (ex : 2) : ";
                 int choixNote;
                 std::cin >> choixNote;
+                if (choixNote == 0) {
+                    annuler(student);
+                }
                 deleteNoteofMatiere(student, allNoteOfMatiere[choixNote - 1], choixNote);
                 break;
             }

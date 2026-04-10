@@ -46,3 +46,5 @@ bool connexionStudent(std::array<std::string, 5> &infoStudents);
 void try_again_connexion(std::array<std::string, 5> &infoStudents);
 
 void entryErrorForInt();
+
+void annuler(const Eleve &student);
