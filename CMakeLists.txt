@@ -10,3 +10,7 @@ include_directories(headers)
 
 # Ajouter le dossier source
 add_subdirectory(src)
+
+if(WIN32 AND NOT CMAKE_GENERATOR)
+    set(CMAKE_GENERATOR "MinGW Makefiles" CACHE INTERNAL "" FORCE)
+endif()
