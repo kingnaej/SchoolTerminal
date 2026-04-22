@@ -14,7 +14,7 @@
 #include "functionality.hpp"
 
 
-void beginProgram()
+void beginProgram(std::filesystem::path const &dataPath)
 {
     int choice;
     do
@@ -31,27 +31,27 @@ void beginProgram()
     if (choice == 1)
     {
         std::array<std::string, 5> infoStudents{};
-        if (const bool isConnected = connexionStudent(infoStudents); !isConnected)
+        if (const bool isConnected = connexionStudent(infoStudents, dataPath); !isConnected)
         {
-            try_again_connexion(infoStudents);
+            try_again_connexion(infoStudents, dataPath);
         }
         else
         {
             Classe const classeStudent(infoStudents[3]);
             const Eleve student(infoStudents[0], infoStudents[1], infoStudents[2], classeStudent, infoStudents[4]);
-            menu(student);
+            menu(student, dataPath);
         }
     }
     else if(choice == 2)
     {
-      auto const eleve = createStudent();
-        menu(eleve);
+      auto const eleve = createStudent(dataPath);
+        menu(eleve, dataPath);
     }
 }
 
-std::vector<std::string> listMatiere(const Eleve &student)
+std::vector<std::string> listMatiere(const Eleve &student, std::filesystem::path const &dataPath)
 {
-    std::string const basePath = "../../data";
+    std::string const basePath = dataPath.string();
     std::filesystem::path const fullPath = std::filesystem::path(basePath) /student.getId();
     std::vector<std::string> allMatiere;
     for (auto const& folder : std::filesystem::directory_iterator(fullPath))
@@ -79,9 +79,9 @@ std::string toLower(const std::string& str) {
     return result;
 }
 
-std::vector<Note> listNoteOfMatiere(const Eleve& student, const std::string &matiere)
+std::vector<Note> listNoteOfMatiere(const Eleve& student, const std::string &matiere, std::filesystem::path const &dataPath)
 {
-    std::string const basePath = "../../data";
+    std::string const basePath = dataPath.string();
     std::string notes = "notes";
     std::filesystem::path const fullPath = std::filesystem::path(basePath) /student.getId() / matiere;
     std::vector<Note> allNoteOfMatiere;
@@ -140,10 +140,10 @@ std::vector<Note> listNoteOfMatiere(const Eleve& student, const std::string &mat
     return allNoteOfMatiere;
 }
 
-std::vector<Eleve> listStudent()
+std::vector<Eleve> listStudent(std::filesystem::path const &dataPath_)
 {
     std::vector<Eleve> listEleve;
-    auto const dataPath = std::filesystem::path("../../data");
+    auto const dataPath = std::filesystem::path(dataPath_);
     for (auto const &id : std::filesystem::directory_iterator(dataPath))
     {
         if (id.is_directory())
@@ -194,16 +194,16 @@ int getNoteNumberRegex(const std::string& fileName) {
     return -1; // Aucun numéro trouvé
 }
 
-double truncateTo2Digits(double value)
+double truncateTo2Digits(const double value)
 {
     return static_cast<int>(value * 100) / 100.0;
 }
 
-void annuler(const Eleve &student) {
-    menu(student);
+void annuler(const Eleve &student, std::filesystem::path const &dataPath) {
+    menu(student, dataPath);
 }
 
-void menu(const Eleve &student)
+void menu(const Eleve &student, std::filesystem::path const &dataPath)
 {
     bool go = true;
     while (go){
@@ -227,13 +227,13 @@ void menu(const Eleve &student)
         case 1:
             {
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                addMatiere(student);
+                addMatiere(student, dataPath);
                 break;
             }
         case 2:
             {
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::vector<std::string> allMatiere =  listMatiere(student);
+                std::vector<std::string> allMatiere =  listMatiere(student, dataPath);
                 if (allMatiere.empty())
                 {
                     std::cout << "Vous ne possedez actuellement aucune matiere a votre compte !" << std::endl;
@@ -253,15 +253,15 @@ void menu(const Eleve &student)
                 int choixMatiere;
                 std::cin >> choixMatiere;
                 if (choixMatiere == 0) {
-                    annuler(student);
+                    annuler(student, dataPath);
                 }
-                addNoteOfMatiere(student, toUpper(allMatiere[choixMatiere - 1]));
+                addNoteOfMatiere(student, toUpper(allMatiere[choixMatiere - 1]), dataPath);
                 break;
             }
         case 3:
             {
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::vector<std::string> allMatiere =  listMatiere(student);
+                std::vector<std::string> allMatiere =  listMatiere(student, dataPath);
                 if (allMatiere.empty())
                 {
                     std::cout << "Vous ne possedez actuellement aucune matiere a votre compte !" << std::endl;
@@ -281,9 +281,9 @@ void menu(const Eleve &student)
                 int choixMatiere;
                 std::cin >> choixMatiere;
                 if (choixMatiere == 0) {
-                    annuler(student);
+                    annuler(student, dataPath);
                 }
-                std::vector<Note> allNoteOfMatiere = listNoteOfMatiere(student, allMatiere[choixMatiere - 1]);
+                std::vector<Note> allNoteOfMatiere = listNoteOfMatiere(student, allMatiere[choixMatiere - 1], dataPath);
                 if (allNoteOfMatiere.empty())
                 {
                     std::cout << "Vous ne possedez actuellement aucune note pour la matiere '" <<
@@ -306,16 +306,16 @@ void menu(const Eleve &student)
                 int choixNote;
                 std::cin >> choixNote;
                 if (choixNote == 0) {
-                    annuler(student);
+                    annuler(student, dataPath);
                 }
                 int const niemeNote = choixNote;
-                modifyNoteofMatiere(student, allNoteOfMatiere[choixNote - 1], niemeNote);
+                modifyNoteofMatiere(student, allNoteOfMatiere[choixNote - 1], niemeNote, dataPath);
                 break;
             }
         case 4:
             {
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::vector<std::string> allMatiere =  listMatiere(student);
+                std::vector<std::string> allMatiere =  listMatiere(student, dataPath);
                 if (allMatiere.empty())
                 {
                     std::cout << "Vous ne possedez actuellement aucune matiere a votre compte !" << std::endl;
@@ -336,9 +336,9 @@ void menu(const Eleve &student)
                 int choixMatiere;
                 std::cin >> choixMatiere;
                 if (choixMatiere == 0) {
-                    annuler(student);
+                    annuler(student, dataPath);
                 }
-                std::vector<Note> allNoteOfMatiere = listNoteOfMatiere(student, allMatiere[choixMatiere - 1]);
+                std::vector<Note> allNoteOfMatiere = listNoteOfMatiere(student, allMatiere[choixMatiere - 1], dataPath);
                 if (allNoteOfMatiere.empty())
                 {
                     std::cout << "Vous ne possedez actuellement aucune note pour la matiere '" <<
@@ -361,15 +361,15 @@ void menu(const Eleve &student)
                 int choixNote;
                 std::cin >> choixNote;
                 if (choixNote == 0) {
-                    annuler(student);
+                    annuler(student, dataPath);
                 }
-                deleteNoteofMatiere(student, allNoteOfMatiere[choixNote - 1], choixNote);
+                deleteNoteofMatiere(student, allNoteOfMatiere[choixNote - 1], choixNote, dataPath);
                 break;
             }
         case 5:
             {
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::vector<std::string> allMatiere =  listMatiere(student);
+                std::vector<std::string> allMatiere =  listMatiere(student, dataPath);
                 if (allMatiere.empty())
                 {
                     std::cout << "Vous ne possedez actuellement aucune matiere a votre compte !" << std::endl;
@@ -386,7 +386,7 @@ void menu(const Eleve &student)
                 for (auto i = 1; i <= allMatiere.size(); ++i)
                 {
                     std::cout << i << "- " << allMatiere[i-1] << ": " << std::endl;
-                    auto const listNote = listNoteOfMatiere(student, allMatiere[i-1]);
+                    auto const listNote = listNoteOfMatiere(student, allMatiere[i-1], dataPath);
                     for (auto const &note : listNote)
                     {
                         std::cout << "\t- " << note.getValue() << "/" << note.getMaxPoint() << std::endl;
@@ -400,7 +400,7 @@ void menu(const Eleve &student)
         case 6:
             {
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::vector<std::string> allMatiere =  listMatiere(student);
+                std::vector<std::string> allMatiere =  listMatiere(student, dataPath);
                 if (allMatiere.empty())
                 {
                     std::cout << "Vous ne possedez actuellement aucune matiere a votre compte !" << std::endl;
@@ -419,7 +419,7 @@ void menu(const Eleve &student)
                 std::cout << "Choisissez une matiere (ex : 2) : ";
                 int choixMatiere;
                 std::cin >> choixMatiere;
-                double const moyenneMatiere = meanOfMatiere(student, toUpper(allMatiere[choixMatiere - 1]));
+                double const moyenneMatiere = meanOfMatiere(student, toUpper(allMatiere[choixMatiere - 1]), dataPath);
                 std::cout << student.getName() << " " << student.getPrenom() << " (" << student.getClasse().getName()
                 << ") votre moyenne a la matiere " << allMatiere[choixMatiere - 1] << " est de " << moyenneMatiere
                 << "/20" << std::endl;
@@ -431,7 +431,7 @@ void menu(const Eleve &student)
         case 7:
             {
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::vector<std::string> allMatiere =  listMatiere(student);
+                std::vector<std::string> allMatiere =  listMatiere(student, dataPath);
                 if (allMatiere.empty())
                 {
                     std::cout << "Vous ne possedez actuellement aucune matiere a votre compte !" << std::endl;
@@ -443,7 +443,7 @@ void menu(const Eleve &student)
                     break;
                 }
 
-                double const moyenneStudent = meanofStudent(student);
+                double const moyenneStudent = meanofStudent(student, dataPath);
                 if (moyenneStudent == 0)
                 {
                     break;
@@ -458,7 +458,7 @@ void menu(const Eleve &student)
         case 8:
             {
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                infoOfStudent(student);
+                infoOfStudent(student, dataPath);
                 break;
             }
         case 9:
@@ -473,9 +473,9 @@ void menu(const Eleve &student)
     }
 }
 
-void addNoteOfMatiere(const Eleve &student, const std::string &matiere)
+void addNoteOfMatiere(const Eleve &student, const std::string &matiere, std::filesystem::path const &dataPath)
 {
-    std::string const basePath = "../../data";
+    std::string const basePath = dataPath.string();
     std::string const id = student.getId();
     std::filesystem::path const fullPath = std::filesystem::path(basePath) / id;
     for (const auto &folder : std::filesystem::directory_iterator{fullPath})
@@ -555,13 +555,13 @@ void addNoteOfMatiere(const Eleve &student, const std::string &matiere)
     }
 }
 
-void addMatiere(const Eleve &student)
+void addMatiere(const Eleve &student, std::filesystem::path const &dataPath)
 {
     std::cout << "Ecris le nom de la matiere : ";
     std::string nameMatiere;
     std::getline(std::cin, nameMatiere);
     nameMatiere = toUpper(nameMatiere);
-    std::string const basePath = "../../data";
+    std::string const basePath = dataPath.string();
     std::string const id = student.getId();
     std::filesystem::path const fullPath = std::filesystem::path(basePath) / id;
     for (const auto &folder : std::filesystem::directory_iterator{fullPath})
@@ -619,7 +619,7 @@ void addMatiere(const Eleve &student)
     }
 }
 
-void modifyNoteofMatiere(const Eleve &student, Note &note, int niemeNote)
+void modifyNoteofMatiere(const Eleve &student, Note &note, int niemeNote, std::filesystem::path const &dataPath)
 {
     // Mettre deux chiffre après la vuirgule : std::cout << std::fixed << std::setprecision(2);
     double newNoteValue;
@@ -634,7 +634,7 @@ void modifyNoteofMatiere(const Eleve &student, Note &note, int niemeNote)
         entryErrorForInt();
     }while (newNoteValue > note.getMaxPoint() || newNoteValue < 0.0);
     note.setValue(newNoteValue);
-    const std::filesystem::path matierePath = std::filesystem::path ("../../data") / student.getId() /
+    const std::filesystem::path matierePath = std::filesystem::path (dataPath) / student.getId() /
         note.getField().getName();
     for (auto const &contenu : std::filesystem::directory_iterator(matierePath))
     {
@@ -676,9 +676,9 @@ void modifyNoteofMatiere(const Eleve &student, Note &note, int niemeNote)
     }
 }
 
-void deleteNoteofMatiere(const Eleve &student, const Note &note, int niemeNote)
+void deleteNoteofMatiere(const Eleve &student, const Note &note, int niemeNote, std::filesystem::path const &dataPath)
 {
-    std::filesystem::path pathField = std::filesystem::path("../../data") / student.getId() / note.getField().getName();
+    std::filesystem::path pathField = std::filesystem::path(dataPath) / student.getId() / note.getField().getName();
     for (auto const &folder : std::filesystem::directory_iterator(pathField))
     {
         if (folder.is_directory())
@@ -696,9 +696,9 @@ void deleteNoteofMatiere(const Eleve &student, const Note &note, int niemeNote)
     }
 }
 
-double meanOfMatiere(const Eleve &student, const std::string &matiere)
+double meanOfMatiere(const Eleve &student, const std::string &matiere, std::filesystem::path const &dataPath)
 {
-    std::vector<Note> const &listNote = listNoteOfMatiere(student, matiere);
+    std::vector<Note> const &listNote = listNoteOfMatiere(student, matiere, dataPath);
     if (listNote.empty())
     {
         return 0;
@@ -714,17 +714,17 @@ double meanOfMatiere(const Eleve &student, const std::string &matiere)
     return result;
 }
 
-double meanofStudent(const Eleve &student)
+double meanofStudent(const Eleve &student, std::filesystem::path const &dataPath)
 {
     //std::cout << "Begin" << std::endl;
     int divBy = 0;
     double sommeMean = 0.0;
-    std::filesystem::path const fullPath = std::filesystem::path("../../data") / student.getId();
+    std::filesystem::path const fullPath = std::filesystem::path(dataPath) / student.getId();
     for (auto const &folder : std::filesystem::directory_iterator(fullPath))
     {
         if (folder.is_directory())
         {
-            std::vector<Note> allNoteOfMatiere = listNoteOfMatiere(student, folder.path().filename().string());
+            std::vector<Note> allNoteOfMatiere = listNoteOfMatiere(student, folder.path().filename().string(), dataPath);
             if (allNoteOfMatiere.empty())
             {
                 std::cout << "Vous ne possedez actuellement aucune note pour la matiere '" <<
@@ -756,7 +756,7 @@ double meanofStudent(const Eleve &student)
                 return 1;
             }
             int const &coefficientMatiere = std::stoi(infoField[1]);
-            double meanOfFolder = meanOfMatiere(student, folder.path().filename().string());
+            double meanOfFolder = meanOfMatiere(student, folder.path().filename().string(), dataPath);
             meanOfFolder *= coefficientMatiere;
             sommeMean += meanOfFolder;
             divBy += coefficientMatiere;
@@ -766,13 +766,13 @@ double meanofStudent(const Eleve &student)
     return result;
 }
 
-void infoOfStudent(const Eleve &student)
+void infoOfStudent(const Eleve &student, std::filesystem::path const &dataPath)
 {
     std::cout <<"\nNom : " << student.getName() << std::endl;
     std::cout << "Prenom : " << student.getPrenom() << std::endl;
     std::cout << "Classe : " << student.getClasse().getName() << std::endl;
     std::cout << "LISTES DES MATIERES : " << std::endl;
-    std::vector<std::string> const listField = listMatiere(student);
+    std::vector<std::string> const listField = listMatiere(student, dataPath);
     if (listField.empty())
     {
         std::cout << "Aucune matiere disponible !" << std::endl;
@@ -784,10 +784,10 @@ void infoOfStudent(const Eleve &student)
         for (auto const &contenu : listField)
         {
             nombreMatiere++;
-            std::cout << nombreMatiere << "- " << contenu << " (Moyenne : " << meanOfMatiere(student, contenu) <<
+            std::cout << nombreMatiere << "- " << contenu << " (Moyenne : " << meanOfMatiere(student, contenu, dataPath) <<
             " /20) "<< std::endl;
         }
-        std::cout << "Votre moyenne generale est de " << meanofStudent(student) << "/20 !" << std::endl;
+        std::cout << "Votre moyenne generale est de " << meanofStudent(student, dataPath) << "/20 !" << std::endl;
         std::cout << "\nAppuie sur la touche Entrer pour quitter le programme... ";
         std::cin.get();
     }
@@ -801,9 +801,9 @@ void endProgram(const Eleve &student)
     std::cin.get();
 }
 
-std::string filesStudent(const std::string &idUser)
+std::string filesStudent(const std::string &idUser, std::filesystem::path const &dataPath)
 {
-    std::filesystem::path searchPath{"../../data"};
+    const std::filesystem::path searchPath{dataPath};
     std::string result;
     for (const auto &entry : std::filesystem::directory_iterator(searchPath))
     {
@@ -823,7 +823,7 @@ std::string filesStudent(const std::string &idUser)
     return result;
 }
 
-Eleve createStudent()
+Eleve createStudent(std::filesystem::path const &dataPath)
 {
     bool unique;
     std::string id;
@@ -833,7 +833,7 @@ Eleve createStudent()
         std::cin >> id;
         id = toLower(id);
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::ifstream idFile{"../../data/id.txt"};
+        std::ifstream idFile{dataPath/"id.txt"};
         if (idFile.is_open()) {
             std::string line;
             unique = true;
@@ -881,7 +881,7 @@ Eleve createStudent()
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     Classe const classeStudent(classe);
     Eleve newStudent(id, nom, prenom, classeStudent, genre);
-    std::string basePath{"../../data/"};
+    std::string basePath{ dataPath.string() };
     std::string newDirectory{id};
     std::filesystem::path fullPath = std::filesystem::path(basePath) / newDirectory;
     if (std::filesystem::create_directory(fullPath))
@@ -900,7 +900,7 @@ Eleve createStudent()
             newFile.close();
             std::cout << std::endl;
         }
-        std::ofstream idFile("../../data/id.txt", std::ios::app);
+        std::ofstream idFile(dataPath/"id.txt", std::ios::app);
         if (idFile.is_open())
         {
             idFile << id << "\n";
@@ -912,21 +912,21 @@ Eleve createStudent()
     return newStudent;
 }
 
-bool connexionStudent(std::array<std::string, 5> &infoStudents)
+bool connexionStudent(std::array<std::string, 5> &infoStudents, std::filesystem::path const &dataPath)
 {
     std::cout << "Entrer votre ID svp : ";
     std::string id;
     std::cin >> id;
     bool success = false;
     // std::cout << "Chemin courant : " << std::filesystem::current_path() << std::endl;
-    if (std::ifstream idFile{"../../data/id.txt"}; idFile.is_open())
+    if (std::ifstream idFile{dataPath/"id.txt"}; idFile.is_open())
     {
         std::string line;
         while (std::getline(idFile >> std::ws, line))
         {
             if (id == line)
             {
-                auto const &dataEleve = filesStudent(id);
+                auto const &dataEleve = filesStudent(id, dataPath);
                 if (std::ifstream infoEleve{dataEleve}; infoEleve.is_open())
                 {
                     int i = 0;
@@ -953,7 +953,7 @@ bool connexionStudent(std::array<std::string, 5> &infoStudents)
     return success;
 }
 
-void try_again_connexion(std::array<std::string, 5> &infoStudents)
+void try_again_connexion(std::array<std::string, 5> &infoStudents, std::filesystem::path const &dataPath)
 {
     bool try_again = true;
     while (try_again)
@@ -971,15 +971,15 @@ void try_again_connexion(std::array<std::string, 5> &infoStudents)
             entryErrorForInt();
             if (decision == 1)
             {
-                if (connexionStudent(infoStudents))
+                if (connexionStudent(infoStudents, dataPath))
                 {
                     try_again = false;
                 }
             }else if (decision == 2)
             {
                 try_again = false;
-                Eleve newStudent = createStudent();
-                menu(newStudent);
+                Eleve newStudent = createStudent(dataPath);
+                menu(newStudent, dataPath);
             }else if (decision == 3)
             {
                 return;
