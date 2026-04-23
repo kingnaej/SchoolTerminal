@@ -11,7 +11,7 @@ Pour executer actuellement le projet, vous aviez besoin suivre les instructions 
 
 3- 
 
-    # Si vous avez Visual Studio (recommandé sur Windows) :
+    # Si vous avez Visual Studio (recommandé sur Windows), Linux ou MAC :
         cmake -S . -B build
     # Si vous utilisez MinGW (comme moi) :
 	    cmake -S . -B build -G "MinGW Makefiles"
