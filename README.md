@@ -5,17 +5,35 @@ Elle permet à chaque élève de s’authentifier via un identifiant unique, d�
 
 Pour executer actuellement le projet, vous aviez besoin suivre les instructions (en ligne de commande) ci dessous : 
 
-1- Cloner le projet : git clone https://github.com/kingnaej/SchoolTerminal.git
 
-2- cd SchoolTerminal
+### 1. Prérequis
+* Un compilateur C++ (GCC, Clang ou MSVC)
+* CMake 3.20 ou plus
 
-3- 
+### 2. Compilation
 
-    # Si vous avez Visual Studio (recommandé sur Windows), Linux ou MAC :
+* 1- Cloner le projet : git clone https://github.com/kingnaej/SchoolTerminal.git
+* 2- cd SchoolTerminal
+
+* 3- 
+
+    #### Pour Windows avec Visual Studio, Linux ou MAC :
         cmake -S . -B build
-    # Si vous utilisez MinGW (comme moi) :
+    #### Pour Windows avec MinGW :
 	    cmake -S . -B build -G "MinGW Makefiles"
 
-4- cmake --build build
+* 4- cmake --build build
 
-5- .\build\SchoolTerminal.exe ou .\build\src\SchoolTerminal.exe
+### 3. DISTRIBUTION
+
+    .\build\SchoolTerminal.exe ou .\build\src\SchoolTerminal.exe
+
+### 4. LANCER L'APP
+
+    # Pour Windows
+
+		.\dist\bin\SchoolTerminal.exe
+
+	# Linux / macOS
+
+		./dist/bin/SchoolTerminal
