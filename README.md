@@ -26,7 +26,7 @@ Pour executer actuellement le projet, vous aviez besoin suivre les instructions 
 
 ### 3. DISTRIBUTION
 
-    .\build\SchoolTerminal.exe ou .\build\src\SchoolTerminal.exe
+    cmake --install build --prefix ./dist
 
 ### 4. LANCER L'APP
 
