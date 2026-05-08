@@ -30,10 +30,10 @@ Pour executer actuellement le projet, vous aviez besoin suivre les instructions 
 
 ### 4. LANCER L'APP
 
-    # Pour Windows
-
+Pour Windows
+    
 		.\dist\bin\SchoolTerminal.exe
 
-	# Linux / macOS
+Linux / macOS
 
 		./dist/bin/SchoolTerminal
